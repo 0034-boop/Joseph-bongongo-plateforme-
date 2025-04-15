@@ -1,0 +1,193 @@
+body{
+    background-color: rgba(143, 140, 140, 0.212);
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    font-size: 14px;
+    margin: 0px;
+    padding: 0px;
+}
+
+h1{
+    font-size: 30px;
+    font-weight: normal;
+    text-align: center;
+}
+h2{
+    font-size: 20px;
+    font-weight: normal;
+    text-align: center;
+}
+header{
+    height: 100px;
+    padding-bottom: 75px;
+}
+footer{
+    height: 80px;
+    padding-top: 30px;
+    text-align: center;
+    background-color: #c5c5c5;
+    border-top: 2px solid #aaa;
+}
+nav{
+    width: 100%;
+    background-color: #6d6c6c;
+    
+    
+}
+nav ul{ 
+    margin: 0px;
+    padding: 0px;
+}
+nav li{
+    list-style-type: none;
+    float: left;
+}
+nav a{
+    text-decoration: none;
+    display: inline;
+    padding: 20px 30px;
+    color: white;
+    text-transform: uppercase;
+    font-size: 15px;
+ }
+ div a{
+    text-decoration: none;
+    font-size: 16px;
+ }
+.table{
+    display: table;
+    margin: auto;
+}
+.infor-jeff:hover{
+    border-top: 1px solid rgb(255, 255, 255);
+    background-color: rgba(255, 255, 255, 0.473);
+ }
+.the-voice:hover,.presentation{
+    border-top: 1px solid blue;
+    background-color:rgba(71, 68, 241, 0.329) ;
+}
+.con-tacte:hover,.création{
+    border-top: 1px solid rgb(236, 240, 24);
+    background-color: rgba(255, 255, 0, 0.363);
+}
+.a-propos:hover,.fonction{
+    border-top: 1px solid rgb(90, 247, 129);
+    background-color: rgba(75, 240, 116, 0.411);
+}
+nav li:hover a{
+    padding: 19px 30px 20px 30px ;
+   }
+img{
+    height: 150px;
+    width: 200px;
+    text-align: center;
+}
+.content img{
+    height: 80px;
+    width: 300px;
+}
+.presentation video:hover{
+    border-top: 2px solid #fff;
+    border: 1px solid #fff;
+ }
+ .presentation video:hover{
+    padding: 0px 0px 0px 0px ;
+ }
+span img{
+    height: 14px;
+    width: 18px;
+}
+section{
+    width: 100%;
+    min-height: 10px;
+    padding-bottom: 30px;
+    margin-bottom: 10px;
+    font-size: 15px;
+    
+}
+.création a{ 
+    text-decoration: none;
+}
+section.esp{
+    width: 100%;
+    min-height: 20px;
+    padding-bottom: 10px;
+    margin-bottom: 0px;
+    font-size: 15px;
+}
+.sec{
+    margin: 0px 10%;
+}
+.left{
+    float: left;
+    width: 42%;
+    margin-left: 0px;
+}
+
+.right{
+    float: right;
+    width: 40%;
+    margin-left: 0px;
+ }
+ .center{
+    float: left;
+    width: 15%;
+    margin: 0px;
+ }
+ .acenter video{
+    height: 100px;
+    width: 200px;
+ }
+.cleft{
+    float: left;
+    width: 30%;
+    margin-left: 0px;
+}
+
+.cright{
+    float: right;
+    width: 50%;
+    margin-left: 0px;
+ }
+ .cright video{
+    height: 100px;
+    width: 200px;
+ }
+ .cleft video{
+    height: 100px;
+    width: 300px;
+ }
+.sec::after, .exp::after, .reco::after{
+    content: "";
+    display: table;
+    clear:left;
+}
+
+@media screen and(max-width:780px){
+    header{
+     height: 50px;
+     padding-bottom: 160px;
+     font-size: 12px;
+   }
+   body{
+    font-size: 12px;
+   }
+   h1{
+     font-size: 40px;
+     margin: 20px 0px 0px 0px;
+  }
+  nav li a{
+     font-size: 12px;
+     padding: 10px;
+     
+ }
+ .section.esp{
+    max-width: 780px;
+ }
+ nav li:hover a{
+     padding: 5px 10px 10px 10px;
+ } 
+ img{
+    padding: 5px 10px 10px 10px;
+    height: 20px ; 
+ }
+  }
